@@ -69,7 +69,7 @@ posts (and keeps updating) a single review comment.
 | Input          | Required | Default                                  | Description                                   |
 | -------------- | -------- | ---------------------------------------- | --------------------------------------------- |
 | `api-key`      | yes      | —                                        | OpenAI API key. Pass via a repository secret. |
-| `model`        | no       | `gpt-4o-mini`                            | Model used for the review.                    |
+| `model`        | no       | `gpt-4o`                                 | OpenAI model. `gpt-4o` for best accuracy; `gpt-4o-mini` to cut cost. |
 | `github-token` | no       | workflow token                           | Token used to read the PR and post the review.|
 | `max-files`    | no       | `20`                                     | Max changed files reviewed per run.           |
 | `include`      | no       | `**/*.svelte,**/*.ts,**/*.js,…`          | Comma-separated file extensions to review.    |

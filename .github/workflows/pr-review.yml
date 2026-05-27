@@ -16,4 +16,3 @@ jobs:
       - uses: ./
         with:
           api-key: ${{ secrets.OPENAI_API_KEY }}
-          model: gpt-4o
