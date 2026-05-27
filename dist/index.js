@@ -35874,7 +35874,7 @@ RUNES & REACTIVITY (Svelte 5)
 - $state: reassignment and deep mutation are reactive (state is a proxy). Destructuring a $state object yields plain, non-reactive values — flag code that destructures reactive state and then expects updates.
 - $derived / $derived.by: use these for values computed from other reactive values. Strong anti-pattern: using $effect just to assign a value derived from other state — that should be $derived. Flag it.
 - $effect: only for side effects (DOM, subscriptions, logging), never to compute derived state. Watch for infinite loops (an effect that writes state it also reads). Return a cleanup function for subscriptions/timers. Prefer $effect.pre when you must run before DOM updates. Use untrack() to read without subscribing.
-- $props(): destructure incoming props; use $bindable() for two-way binding. Never mutate a non-bindable prop.
+- $props(): destructuring props is the idiomatic, fully reactive pattern — \`let { a, b } = $props()\` does NOT lose reactivity. Use $bindable() for two-way binding. Never mutate a non-bindable prop.
 - Reactivity loss across modules: a plain \`let x = 0\` in a .svelte.ts/.svelte.js module is NOT reactive — needs $state, and must be exported via a getter or object to keep reactivity at the import site.
 - Mixing legacy (export let, $:, $store) with runes inconsistently in the same component.
 
@@ -35893,6 +35893,20 @@ SECURITY & A11Y
 
 PERFORMANCE
 - Missing key in {#each} causing reorder/state bugs; needless recomputation; reaching for stores where a rune is simpler.
+
+DO NOT FLAG (these are correct Svelte 5 — flagging them is a false positive that destroys trust):
+- Destructuring $props(): \`let { a, b } = $props()\` is THE recommended idiom and stays reactive. Never claim it loses reactivity. (Contrast: destructuring a $state() object DOES yield non-reactive values — that one you DO flag. Do not confuse the two.)
+- $derived / $derived.by expressions; $effect used for genuine side effects; $bindable() props; window/document accessed inside onMount or behind a \`browser\` guard from $app/environment.
+
+REVIEW PROCEDURE — apply to EVERY changed file, including .svelte.ts / .svelte.js rune modules (not just .svelte components). Walk this checklist per file before answering; do not stop after the first one or two matches:
+1. Import from $env/static/private or $env/dynamic/private in a component body, universal load, or any client-reachable code? → critical (secret leak).
+2. Universal load (+page.ts / +layout.ts) returning a secret or private data? → critical (shipped to browser).
+3. window / document / localStorage / navigator at module top-level or during render, with no \`browser\` guard? → critical (SSR crash).
+4. {@html ...} on user-controlled or unsanitized input? → critical (XSS).
+5. $effect assigning a value computed from other reactive state (should be $derived)? → warning.
+6. Destructured $state() object, or plain \`let\` in a .svelte.ts/.svelte.js module, expected to stay reactive? → warning.
+7. Mutating a non-$bindable prop; missing key in {#each}; inconsistent legacy/runes mix.
+Report every item that genuinely matches across all files.
 
 OUTPUT — return STRICT JSON only, no prose:
 {"findings": [{"file": string, "line": number|null, "severity": "critical"|"warning"|"suggestion", "issue": string, "suggestion": string}]}
