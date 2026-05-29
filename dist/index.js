@@ -36003,9 +36003,22 @@ function dedupeAndSort(findings) {
     return out;
 }
 async function reviewFiles(files, opts) {
-    const client = new openai_1.default({ apiKey: opts.apiKey });
+    const client = new openai_1.default({ apiKey: opts.apiKey, timeout: 60000 });
     const batches = chunkFiles(files);
     const all = [];
+    // Surface oversized diffs: a file whose patch exceeds the budget is only partially
+    // reviewed, so the review may be incomplete — tell the user instead of failing silently.
+    for (const f of files) {
+        if (f.patch.length > CHARS_PER_BATCH) {
+            all.push({
+                file: f.path,
+                line: null,
+                severity: "suggestion",
+                issue: `Diff too large — only the first ${CHARS_PER_BATCH.toLocaleString()} characters were reviewed; this file's review may be incomplete.`,
+                suggestion: "Split large changes into smaller PRs for full coverage.",
+            });
+        }
+    }
     for (const batch of batches) {
         const userMessage = (0, prompt_js_1.buildUserMessage)(batch);
         let raw = "";

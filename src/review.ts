@@ -73,9 +73,23 @@ export async function reviewFiles(
   files: ChangedFile[],
   opts: { apiKey: string; model: string }
 ): Promise<Finding[]> {
-  const client = new OpenAI({ apiKey: opts.apiKey });
+  const client = new OpenAI({ apiKey: opts.apiKey, timeout: 60000 });
   const batches = chunkFiles(files);
   const all: Finding[] = [];
+
+  // Surface oversized diffs: a file whose patch exceeds the budget is only partially
+  // reviewed, so the review may be incomplete — tell the user instead of failing silently.
+  for (const f of files) {
+    if (f.patch.length > CHARS_PER_BATCH) {
+      all.push({
+        file: f.path,
+        line: null,
+        severity: "suggestion",
+        issue: `Diff too large — only the first ${CHARS_PER_BATCH.toLocaleString()} characters were reviewed; this file's review may be incomplete.`,
+        suggestion: "Split large changes into smaller PRs for full coverage.",
+      });
+    }
+  }
 
   for (const batch of batches) {
     const userMessage = buildUserMessage(batch);
