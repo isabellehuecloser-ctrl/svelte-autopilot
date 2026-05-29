@@ -94,7 +94,7 @@ export async function reviewFiles(
   for (const batch of batches) {
     const userMessage = buildUserMessage(batch);
     let raw = "";
-    for (let attempt = 0; attempt < 2; attempt++) {
+    for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const res = await client.chat.completions.create({
           model: opts.model,
@@ -108,8 +108,8 @@ export async function reviewFiles(
         raw = res.choices[0]?.message?.content ?? "";
         break;
       } catch (err) {
-        if (attempt === 1) throw err;
-        // Exponential backoff so a transient 429/5xx doesn't burn both attempts
+        if (attempt === 2) throw err;
+        // Exponential backoff so a transient 429/5xx doesn't burn attempts
         // back-to-back. 500ms → 1000ms.
         await new Promise((r) => setTimeout(r, 500 * Math.pow(2, attempt)));
       }

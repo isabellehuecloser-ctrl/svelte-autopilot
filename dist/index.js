@@ -36022,7 +36022,7 @@ async function reviewFiles(files, opts) {
     for (const batch of batches) {
         const userMessage = (0, prompt_js_1.buildUserMessage)(batch);
         let raw = "";
-        for (let attempt = 0; attempt < 2; attempt++) {
+        for (let attempt = 0; attempt < 3; attempt++) {
             try {
                 const res = await client.chat.completions.create({
                     model: opts.model,
@@ -36037,9 +36037,9 @@ async function reviewFiles(files, opts) {
                 break;
             }
             catch (err) {
-                if (attempt === 1)
+                if (attempt === 2)
                     throw err;
-                // Exponential backoff so a transient 429/5xx doesn't burn both attempts
+                // Exponential backoff so a transient 429/5xx doesn't burn attempts
                 // back-to-back. 500ms → 1000ms.
                 await new Promise((r) => setTimeout(r, 500 * Math.pow(2, attempt)));
             }
