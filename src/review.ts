@@ -109,6 +109,9 @@ export async function reviewFiles(
         break;
       } catch (err) {
         if (attempt === 1) throw err;
+        // Exponential backoff so a transient 429/5xx doesn't burn both attempts
+        // back-to-back. 500ms → 1000ms.
+        await new Promise((r) => setTimeout(r, 500 * Math.pow(2, attempt)));
       }
     }
     all.push(...parseFindings(raw));
