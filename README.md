@@ -15,7 +15,7 @@ matter for Svelte 5 and SvelteKit.
 
 > **Two ways to use it**
 > - 🆓 **Free GitHub Action** (this repo) — bring your own OpenAI key. Setup below.
-> - ⚡ **Hosted Pro** — no API key, no CI setup, unlimited reviews. [Install the app →](https://github.com/apps/svelte-autopilot) · [Dashboard](https://svelte-autopilot-app.fly.dev/dashboard)
+> - ⚡ **Hosted Pro** — no API key, no CI setup, unlimited reviews. [Install the app →](https://github.com/apps/svelte-autopilot) · [Dashboard](https://svelte.useautopilot.dev/dashboard)
 
 ---
 
