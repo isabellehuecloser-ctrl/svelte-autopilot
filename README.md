@@ -5,11 +5,17 @@
 
 **AI code review specialized for Svelte 5 & SvelteKit — on every pull request.**
 
+![Svelte Autopilot reviews a pull request inline](docs/hero.png)
+
 Generic review bots don't know that a `$effect` setting derived state should be a
 `$derived`, that importing `$env/static/private` into a component leaks a secret to
 the browser, or that touching `window` at the top level crashes SSR. Svelte Autopilot
 does. It reads each PR's diff and leaves a focused review of the issues that actually
 matter for Svelte 5 and SvelteKit.
+
+> **Two ways to use it**
+> - 🆓 **Free GitHub Action** (this repo) — bring your own OpenAI key. Setup below.
+> - ⚡ **Hosted Pro** — no API key, no CI setup, unlimited reviews. [Install the app →](https://github.com/apps/svelte-autopilot) · [Dashboard](https://svelte-autopilot-app.fly.dev/dashboard)
 
 ---
 
