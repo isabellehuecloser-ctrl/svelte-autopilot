@@ -79,6 +79,19 @@ posts (and keeps updating) a single review comment.
 | `github-token` | no       | workflow token                           | Token used to read the PR and post the review.|
 | `max-files`    | no       | `20`                                     | Max changed files reviewed per run.           |
 | `include`      | no       | `**/*.svelte,**/*.ts,**/*.js,…`          | Comma-separated file extensions to review.    |
+| `license-key`  | no       | —                                        | Autopilot Pro key. Required only on **private** repos (public is free). [Get one →](https://useautopilot.dev) |
+
+### Private repositories (Autopilot Pro)
+
+Public repos are free. On a **private** repo, add your license key:
+
+```yaml
+        with:
+          api-key: ${{ secrets.OPENAI_API_KEY }}
+          license-key: ${{ secrets.AUTOPILOT_LICENSE_KEY }}
+```
+
+Public repositories are always free. Private repositories need a Pro license — **$19/mo or $190/yr** (2 months free) at [svelte.useautopilot.dev](https://svelte.useautopilot.dev). If the license server is ever unreachable, the check **fails open** and never blocks your CI.
 
 ## Outputs
 
